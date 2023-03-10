@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Web Risk API Demo</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <style>
+      input[type="text"] {
+        color: black !important;
+      }
+      #output {
+        color: black !important;
+
+      }
+
+      /* css spinner start */
+      .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+      }
+      .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+      }
+      .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+      }
+      .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+      }
+      .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+      }
+      .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+      }
+      .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+      }
+      .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+      }
+      .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+      }
+      .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+      }
+      .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+      }
+      .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+      }
+      .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+      }
+      .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+      }
+      .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+      }
+      .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+      }
+      .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+      }
+      .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+      }
+      @keyframes lds-roller {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* css spinner end */
+    </style>
+  </head>
+  <body data-bs-theme="dark">
+    <header>
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+          <a class="navbar-brand" href="/">Web Risk API Demo</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarText"
+            aria-controls="navbarText"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+            <span class="navbar-text">
+              <div class="form-check form-switch mx-4">
+                <input
+                  class="form-check-input p-2"
+                  type="checkbox"
+                  role="switch"
+                  id="flexSwitchCheckChecked"
+                  checked
+                  onclick="myFunction()"
+                />
+              </div>
+            </span>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1 class="text-center mt-5">WEB RISK</h1>
+                </div>
+            </div>
+          <div class="row mt-5">
+            <div class="col-md-6">
+              <div class="d-grid gap-4 col-6 mx-auto">
+                <button class="btn btn-primary" id="lookup">Lookup</button>
+                <button class="btn btn-primary" id="update">Update</button>
+                <button class="btn btn-primary" id="submission">
+                  Submission
+                </button>
+                <button class="btn btn-primary" id="evaluate">Evaluate</button>
+                <button class="btn btn-primary" id="coverage">
+                  Ext-Coverage
+                </button>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="text-center" id="spinner" style="display: none;">
+                    <div class="lds-roller">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                      </div>
+                </div>
+              
+              <div id="box" style="display: block">
+                <div class="mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="url"
+                    placeholder="URL"
+                  />
+                  <span id="error" class="text-danger"></span>
+                </div>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-primary" id="random">
+                    Random Url
+                  </button>
+                </div>
+                <div class="my-3">
+                  <textarea
+                    class="form-control"
+                    id="output"
+                    rows="7"
+                    placeholder="OUTPUT"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      function myFunction() {
+        var element = document.body;
+        element.dataset.bsTheme =
+          element.dataset.bsTheme == "light" ? "dark" : "light";
+      }
+
+      function hasHttpOrHttps(url) {
+        return url.startsWith("http://") || url.startsWith("https://");
+      }
+
+      function isValidUrl(url) {
+        var pattern = new RegExp(
+          "^(https?:\\/\\/)?" +
+            "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
+            "((\\d{1,3}\\.){3}\\d{1,3}))" +
+            "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+            "(\\?[;&amp;a-z\\d%_.~+=-]*)?" +
+            "(\\#[-a-z\\d_]*)?$",
+          "i"
+        );
+        return pattern.test(url);
+      }
+
+      function errorMsgTrigger(text) {
+        document.getElementById("error").innerText = text;
+        setTimeout(() => {
+          document.getElementById("error").innerText = "";
+        }, 2000);
+      }
+
+
+      //   Random Url
+
+      document.getElementById("random").addEventListener("click", () => {
+
+        document.getElementById("spinner").style.display = 'block'
+        document.getElementById("box").style.display = 'none'
+
+        fetch("/random-url", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Do something with the response data
+            // console.log(data["result"]);
+
+            document.getElementById("url").value = data["result"]
+            
+
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+          });
+      });
+
+      //   Lookup
+
+      document.getElementById("lookup").addEventListener("click", () => {
+        let url = document.getElementById("url").value.trim();
+        
+
+        if (url === "") {
+          errorMsgTrigger("Url Input Field is empty");
+          return;
+        }
+
+        if (hasHttpOrHttps(url) === false) {
+          errorMsgTrigger("Https:// or http:// is missing on the url");
+          return;
+        }
+
+        if (isValidUrl(url) === false) {
+          errorMsgTrigger("Invalid Url");
+          return;
+        }
+
+
+        document.getElementById("lookup").disabled = true;
+        document.getElementById("spinner").style.display = 'block'
+        document.getElementById("box").style.display = 'none'
+
+        fetch("/lookup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: url }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Do something with the response data
+            // console.log(data["result"]);
+
+            document.getElementById("output").value = JSON.stringify(
+              data["result"]
+            );
+
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("lookup").disabled = false;
+
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("lookup").disabled = false;
+            errorMsgTrigger("Something went wrong, please try again.");
+          });
+      });
+
+      //   Update
+
+      document.getElementById("update").addEventListener("click", () => {
+        document.getElementById("url").value = ""
+        document.getElementById("update").disabled = true;
+        document.getElementById("spinner").style.display = 'block'
+        document.getElementById("box").style.display = 'none'
+
+        fetch("/update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Do something with the response data
+            // console.log(data["result"]);
+
+            document.getElementById("output").value = JSON.stringify(
+              data["result"]
+            );
+
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("update").disabled = false;
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("update").disabled = false;
+            errorMsgTrigger("Something went wrong, please try again.");
+          });
+      });
+
+      //   Submission
+
+      document.getElementById("submission").addEventListener("click", () => {
+        let url = document.getElementById("url").value.trim();
+
+        if (url === "") {
+          errorMsgTrigger("Url Input Field is empty");
+          return;
+        }
+
+        if (hasHttpOrHttps(url) === false) {
+          errorMsgTrigger("Https:// or http:// is missing on the url");
+          return;
+        }
+
+        if (isValidUrl(url) === false) {
+          errorMsgTrigger("Invalid Url");
+          return;
+        }
+
+        document.getElementById("submission").disabled = false;
+        document.getElementById("spinner").style.display = 'block'
+        document.getElementById("box").style.display = 'none'
+
+        fetch("/submission", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: url }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Do something with the response data
+            // console.log(data["result"]);
+
+            document.getElementById("output").value = JSON.stringify(
+              data["result"]
+            );
+
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("submission").disabled = false;
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("submission").disabled = false;
+            errorMsgTrigger("Something went wrong, please try again.");
+          });
+      });
+
+      //   Evaluate
+
+      document.getElementById("evaluate").addEventListener("click", () => {
+        let url = document.getElementById("url").value.trim();
+
+        if (url === "") {
+          errorMsgTrigger("Url Input Field is empty");
+          return;
+        }
+
+        if (hasHttpOrHttps(url) === false) {
+          errorMsgTrigger("Https:// or http:// is missing on the url");
+          return;
+        }
+
+        if (isValidUrl(url) === false) {
+          errorMsgTrigger("Invalid Url");
+          return;
+        }
+
+
+        document.getElementById("evaluate").disabled = true;
+        document.getElementById("spinner").style.display = 'block'
+        document.getElementById("box").style.display = 'none'
+
+        fetch("/evaluate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: url }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Do something with the response data
+            // console.log(data["result"]);
+
+            document.getElementById("output").value = JSON.stringify(
+              data["result"]
+            );
+
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("evaluate").disabled = false;
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("evaluate").disabled = false;
+            errorMsgTrigger("Something went wrong, please try again.");
+          });
+      });
+
+      // ext-coverage
+
+      document.getElementById("coverage").addEventListener("click", () => {
+        let url = document.getElementById("url").value.trim();
+
+        if (url === "") {
+          errorMsgTrigger("Url Input Field is empty");
+          return;
+        }
+
+        if (hasHttpOrHttps(url) === false) {
+          errorMsgTrigger("Https:// or http:// is missing on the url");
+          return;
+        }
+
+        if (isValidUrl(url) === false) {
+          errorMsgTrigger("Invalid Url");
+          return;
+        }
+
+        document.getElementById("coverage").disabled = true;
+
+
+        document.getElementById("spinner").style.display = 'block'
+        document.getElementById("box").style.display = 'none'
+
+        fetch("/ext-coverage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: url }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Do something with the response data
+            // console.log(data["result"]);
+
+            document.getElementById("output").value = JSON.stringify(
+              data["result"]
+            );
+
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("coverage").disabled = false;
+
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            document.getElementById("spinner").style.display = 'none'
+            document.getElementById("box").style.display = 'block'
+            document.getElementById("coverage").disabled = false;
+            errorMsgTrigger("Something went wrong, please try again.");
+          });
+      });
+    </script>
+  </body>
+</html>
